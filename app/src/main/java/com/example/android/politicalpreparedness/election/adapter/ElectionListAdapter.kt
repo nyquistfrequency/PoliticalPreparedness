@@ -8,21 +8,21 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.android.politicalpreparedness.databinding.ListItemElectionsBinding
 import com.example.android.politicalpreparedness.network.models.Election
 
-class ElectionListAdapter(private val clickListener: ElectionListener) :
+class ElectionListAdapter(private val clickListener: ElectionClickListener) :
     ListAdapter<Election, ElectionListAdapter.ElectionViewHolder>(ElectionDiffCallback()) {
 
-    //ToDo: Crosscheck if this works as intended
     override fun onBindViewHolder(holder: ElectionViewHolder, position: Int) {
-        holder.bind(getItem(position)!!, clickListener)
+        holder.bind(getItem(position), clickListener)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ElectionViewHolder {
         return ElectionViewHolder.from(parent)
     }
 
+    // TODO: DateFormatter?
     class ElectionViewHolder(private val binding: ListItemElectionsBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        fun bind(item: Election, clickListener: ElectionListener) {
+        fun bind(item: Election, clickListener: ElectionClickListener) {
             binding.election = item
             binding.clickListenerElectionList = clickListener
             binding.executePendingBindings()
@@ -49,8 +49,7 @@ class ElectionListAdapter(private val clickListener: ElectionListener) :
 
     }
 
-    //TODO: Check if "onClick" is being called later on
-    class ElectionListener(val clickListener: (election: Election) -> Unit) {
+    class ElectionClickListener(val clickListener: (election: Election) -> Unit) {
         fun onClick(election: Election) = clickListener(election)
     }
 }

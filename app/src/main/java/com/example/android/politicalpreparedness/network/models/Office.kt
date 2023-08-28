@@ -8,7 +8,7 @@ data class Office (
     @Json(name="divisionId") val division:Division,
     @Json(name="officialIndices") val officials: List<Int>
 ) {
-    //ToDo: Map it out properly - current causing an error
+    // ToDo: Map it out properly - current causing an error
 //    fun getRepresentatives(officials: List<Official>): List<Representative> {
 //        return this.officials.map { index ->
 //            Representative(officials[index], this)

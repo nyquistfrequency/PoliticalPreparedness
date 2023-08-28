@@ -1,58 +1,128 @@
 package com.example.android.politicalpreparedness.representative
 
+import android.Manifest
 import android.content.Context
-import android.location.Geocoder
-import android.location.Location
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import com.example.android.politicalpreparedness.R
 import com.example.android.politicalpreparedness.databinding.FragmentRepresentativeBinding
-import com.example.android.politicalpreparedness.network.models.Address
-import java.util.Locale
+import com.example.android.politicalpreparedness.representative.adapter.RepresentativeListAdapter
 
-class DetailFragment : Fragment() {
+class RepresentativeFragment : Fragment() {
 
     companion object {
-        //TODO: Add Constant for Location request
+        private val TAG = RepresentativeFragment::class.java.simpleName
+        private const val REQUEST_LOCATION_PERMISSION = 1
     }
 
-    //TODO: Declare ViewModel
+    private val representativeviewModel: RepresentativeViewModel by lazy {
+        val activity = requireNotNull(this.activity)
+        val viewModelFactory = RepresentativeViewModelFactory(activity.application)
+        ViewModelProvider(this, viewModelFactory)[RepresentativeViewModel::class.java]
+    }
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+    //ToDo: Rework adapter - it's not just a click on the representatives but a click on of the elements (website, facebook, twitter)
+    private val representativeListAdapter =
+        RepresentativeListAdapter(RepresentativeListAdapter.RepresentativeClickListener { representative ->
+            representativeviewModel.onRepresentativeClicked(representative)
+        })
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         val binding = FragmentRepresentativeBinding.inflate(inflater)
 
-        //TODO: Establish bindings
+        binding.lifecycleOwner = this
+        binding.representativeViewModel = representativeviewModel
 
         //TODO: Define and assign Representative adapter
+        binding.representativeRecycler.adapter = representativeListAdapter
 
         //TODO: Populate Representative adapter
 
         //TODO: Establish button listeners for field and location search
-
+        //TODO: On Button Press:
+        //            if (checkLocationPermission()) {
+        //            getlocation
+        //        } else {
+        //            requestQPermission()
+        //        }
         return binding.root
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         //TODO: Handle location permission result to get location on permission granted
+        if (requestCode == REQUEST_LOCATION_PERMISSION) {
+            if (grantResults.isNotEmpty() &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED
+            ) {
+                //TODO: Determine what should be executed here
+                Log.i(TAG, "Test")
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    R.string.permission_denied_explanation,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+    private fun requestQPermission() {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) ==
+            PackageManager.PERMISSION_GRANTED &&
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+            == PackageManager.PERMISSION_GRANTED
+        ) {
+            //ToDo: enable my location without utilizing the map
+            getLocation()
+        } else {
+            requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                REQUEST_LOCATION_PERMISSION
+            )
+        }
     }
 
     private fun checkLocationPermissions(): Boolean {
         return if (isPermissionGranted()) {
             true
         } else {
-            //TODO: Request Location permissions
+            //TODO: REVIEW IF THIS WORKS AS INTENDED
+            requestQPermission()
             false
         }
     }
 
-    private fun isPermissionGranted() : Boolean {
+
+    private fun isPermissionGranted(): Boolean {
         //TODO: Check if permission is already granted and return (true = granted, false = denied/other)
-        return true
+        return (
+                ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED
+                )
     }
 
     private fun getLocation() {

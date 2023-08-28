@@ -1,8 +1,13 @@
 package com.example.android.politicalpreparedness.representative
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.android.politicalpreparedness.representative.model.Representative
 
-class RepresentativeViewModel: ViewModel() {
+class RepresentativeViewModel (application: Application): AndroidViewModel(application){
 
     //TODO: Establish live data for representatives and address
 
@@ -22,5 +27,13 @@ class RepresentativeViewModel: ViewModel() {
     //TODO: Create function get address from geo location
 
     //TODO: Create function to get address from individual fields
+
+    fun onRepresentativeClicked(representative: Representative) {
+
+    }
+
+//    fun doneNavigating() {
+//        value = null
+//    }
 
 }

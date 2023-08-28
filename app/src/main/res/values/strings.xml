@@ -3,6 +3,9 @@
     <string name="app_name">Political Preparedness</string>
     <string name="upcoming_elections">Upcoming Elections</string>
     <string name="find_my_representatives">Find my representatives</string>
+    <string name="saved_elections">Saved Elections</string>
+
+    <string name="permission_denied_explanation">You need to grant location permission for this functionality to work.</string>
 
     <!-- TODO: Add necessary string values -->
 
