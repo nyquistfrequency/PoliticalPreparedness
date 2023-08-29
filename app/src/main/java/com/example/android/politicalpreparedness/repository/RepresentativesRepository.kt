@@ -1,4 +1,6 @@
 package com.example.android.politicalpreparedness.repository
 
-class RepresentativesRepository {
+import com.example.android.politicalpreparedness.database.ElectionDatabase
+
+class RepresentativesRepository () {
 }

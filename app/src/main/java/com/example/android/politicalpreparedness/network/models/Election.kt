@@ -10,20 +10,10 @@ import java.util.*
 @Parcelize
 @Entity(tableName = ELECTION_TABLE_NAME)
 data class Election(
-        @PrimaryKey val id: Int,
-        @ColumnInfo(name = "name")val name: String,
-        @ColumnInfo(name = "electionDay")val electionDay: Date,
-        @Embedded(prefix = "division_") @Json(name="ocdDivisionId") val division: Division
+    @PrimaryKey var id: Int,
+    @ColumnInfo(name = "name")val name: String,
+    @ColumnInfo(name = "electionDay")val electionDay: Date,
+    @Embedded(prefix = "division_") @Json(name="ocdDivisionId") val division: Division,
+    @ColumnInfo(name = "isSaved") var isSaved: Boolean = false
 ) : Parcelable
 
-// From DevBytes Code
-fun List<Election>.asDomainModel(): List<Election> {
-        return map {
-                Election(
-                        id = it.id,
-                        name = it.name,
-                        electionDay = it.electionDay,
-                        division = it.division
-                )
-        }
-}

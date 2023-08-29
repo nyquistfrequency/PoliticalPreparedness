@@ -5,28 +5,27 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.example.android.politicalpreparedness.network.models.Election
+import com.example.android.politicalpreparedness.network.models.VoterInfo
 
-//Updated Version because of the changed Entity (with isSaved attribute)
-@Database(entities = [Election::class], version = 2, exportSchema = false)
+@Database(entities = [VoterInfo::class], version = 1, exportSchema = false)
 @TypeConverters(Converters::class)
-abstract class ElectionDatabase: RoomDatabase() {
+abstract class VoterInfoDatabase: RoomDatabase() {
 
-    abstract val electionDao: ElectionDao
+    abstract val voterInfoDao : VoterInfoDao
 
     companion object {
 
         @Volatile
-        private var INSTANCE: ElectionDatabase? = null
+        private var INSTANCE: VoterInfoDatabase? = null
 
-        fun getInstance(context: Context): ElectionDatabase {
+        fun getInstance(context: Context): VoterInfoDatabase {
             synchronized(this) {
                 var instance = INSTANCE
                 if (instance == null) {
                     instance = Room.databaseBuilder(
                             context.applicationContext,
-                            ElectionDatabase::class.java,
-                            "election_database"
+                            VoterInfoDatabase::class.java,
+                        "voter_info_database"
                     )
                             .fallbackToDestructiveMigration()
                             .build()

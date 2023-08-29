@@ -1,10 +1,8 @@
 package com.example.android.politicalpreparedness.network
 
 import com.example.android.politicalpreparedness.Constants
-import com.example.android.politicalpreparedness.network.CivicsApi.retrofitService
 import com.example.android.politicalpreparedness.network.jsonadapter.ElectionAdapter
 import com.example.android.politicalpreparedness.network.jsonadapter.DateAdapter
-import com.example.android.politicalpreparedness.network.models.Election
 import com.example.android.politicalpreparedness.network.models.ElectionResponse
 import com.example.android.politicalpreparedness.network.models.RepresentativeResponse
 import com.example.android.politicalpreparedness.network.models.VoterInfoResponse
@@ -19,9 +17,9 @@ import retrofit2.http.Query
 private const val BASE_URL = Constants.BASE_URL
 
 private val moshi = Moshi.Builder()
-    .add(KotlinJsonAdapterFactory())
     .add(DateAdapter())
     .add(ElectionAdapter())
+    .add(KotlinJsonAdapterFactory()) // Not completely understood why, but the order matters here - See https://knowledge.udacity.com/questions/475194
     .build()
 
 // Tbd if ScalarsConverterFactory needs to be applied
@@ -47,12 +45,12 @@ interface CivicsApiService {
 
     @GET("voterinfo")
     suspend fun getVoterInfo(
-        @Query("address") address: String,
-        @Query("electionId") electionId: Int
+        @Query("address") address: Int,
+        @Query("electionId") electionId: String
         ) : VoterInfoResponse
 
     @GET("representatives")
-    suspend fun getRepresentatives(
+    suspend fun getRepresentativesAddress(
         @Query("address") address: String
     ) : RepresentativeResponse
 

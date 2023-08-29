@@ -6,6 +6,7 @@
     <string name="saved_elections">Saved Elections</string>
 
     <string name="permission_denied_explanation">You need to grant location permission for this functionality to work.</string>
+    <string name="no_web_browser_found">To utilize this functionality you need to download a web browser</string>
 
     <!-- TODO: Add necessary string values -->
 

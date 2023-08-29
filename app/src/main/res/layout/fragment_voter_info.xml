@@ -3,7 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- TODO: Add data binding node for Voter Info ViewModel -->
     <data>
         <variable
             name="voterInfoViewModel"
@@ -62,29 +61,41 @@
             app:layout_constraintTop_toBottomOf="@id/state_locations"
             app:layout_constraintStart_toStartOf="@id/election_date" />
 
-        <androidx.constraintlayout.widget.Group
-            android:id="@+id/address_group"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:constraint_referenced_ids="state_correspondence_header,address" />
+        <!-- TODO: Is this required? I don't see the matching content in the requirements -->
+<!--        <androidx.constraintlayout.widget.Group-->
+<!--            android:id="@+id/address_group"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:constraint_referenced_ids="state_correspondence_header,address" />-->
 
-        <!-- TODO: Add visual styling and content -->
-        <TextView
-            android:id="@+id/state_correspondence_header"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/state_ballot"
-            app:layout_constraintStart_toStartOf="@id/election_date" />
+<!--        &lt;!&ndash; TODO: Add visual styling and content &ndash;&gt;-->
+<!--        <TextView-->
+<!--            android:id="@+id/state_correspondence_header"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/state_ballot"-->
+<!--            app:layout_constraintStart_toStartOf="@id/election_date" />-->
 
-        <!-- TODO: Add data binding -->
-        <TextView
-            android:id="@+id/address"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/state_correspondence_header"
-            app:layout_constraintStart_toStartOf="@id/election_date" />
+<!--        &lt;!&ndash; TODO: Add data binding &ndash;&gt;-->
+<!--        <TextView-->
+<!--            android:id="@+id/address"-->
+<!--            android:layout_width="wrap_content"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            app:layout_constraintTop_toBottomOf="@id/state_correspondence_header"-->
+<!--            app:layout_constraintStart_toStartOf="@id/election_date" />-->
 
         <!-- TODO: Add button to save election to Room -->
+        <Button
+            android:id="@+id/follow_unfollow_button"
+            style="@style/ButtonStyle"
+            android:layout_width="@dimen/button_width"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="Follow Election"/>
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
