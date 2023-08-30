@@ -31,8 +31,8 @@
         android:label="fragment_voter_info"
         tools:layout="@layout/fragment_voter_info">
         <argument
-            android:name="arg_election_id"
-            app:argType="integer" />
+            android:name="election"
+            app:argType="com.example.android.politicalpreparedness.network.models.Election" />
 <!--        TODO: Review what this implementation means. Do I need it?
 <argument-->
 <!--            android:name="arg_division"-->

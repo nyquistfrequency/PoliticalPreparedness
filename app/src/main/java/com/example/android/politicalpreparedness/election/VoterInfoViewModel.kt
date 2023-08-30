@@ -6,86 +6,77 @@ import android.util.Log
 import androidx.lifecycle.*
 import com.example.android.politicalpreparedness.database.ElectionDatabase
 import com.example.android.politicalpreparedness.database.VoterInfoDatabase
+import com.example.android.politicalpreparedness.network.models.Election
 import com.example.android.politicalpreparedness.repository.VoterInfoRepository
 import kotlinx.coroutines.launch
+import java.util.*
 
 class VoterInfoViewModel(
     application: Application,
-    private val electionId: Int
+    election: Election
 ) : AndroidViewModel(application) {
 
     private val voterInfoDatabase = VoterInfoDatabase.getInstance(application)
     private val electionDatabase = ElectionDatabase.getInstance(application)
     private val voterInfoRepository = VoterInfoRepository(voterInfoDatabase, electionDatabase)
 
+    private val electionId = election.id
 
-    private val _followButtonText = MutableLiveData<String>()
-    val followButtonText: LiveData<String>
-        get() = _followButtonText
+    val voterInfo = voterInfoRepository.voterInfo
 
-    private val isElectionSaved: MutableLiveData<Boolean> = MutableLiveData<Boolean>().apply {
-        viewModelScope.launch {
-            value = voterInfoRepository.getElectionSavedStatus(electionId)
+    val isElectionSaved: LiveData<Boolean> =
+        voterInfoRepository.getElectionById(electionId).map { election ->
+            election?.isSaved ?: false
         }
-    }
+
+    val electionName: LiveData<String> =
+        voterInfoRepository.getElectionById(electionId).map { election ->
+            election?.name ?: ""
+        }
+
+    val electionDay: LiveData<Date> =
+        voterInfoRepository.getElectionById(electionId).map { election ->
+            election?.electionDay!!
+        }
 
     init {
-        updateFollowButtonText()
+        refreshVoterInfo(election)
     }
-
-    fun onElectionInformationClicked() {
-        //_navigateToVoterInfoFragment.value = election
-    }
-
-    fun doneNavigating() {
-        // _navigateToVoterInfoFragment.value = null
-    }
-
 
     fun toggleElectionSavedStatus() {
         viewModelScope.launch {
-            val currentSavedStatus = voterInfoRepository.getElectionSavedStatus(electionId)
-            val newSavedStatus = !currentSavedStatus
+            val currentSavedStatus = isElectionSaved.value
+            val newSavedStatus = !currentSavedStatus!!
             // Save or remove the election from the local database based on the new saved status
             if (newSavedStatus) {
                 // Save the election
                 voterInfoRepository.followElection(electionId)
-                _followButtonText.value = "Unfollow Election"
             } else {
                 // Remove the election
                 voterInfoRepository.unfollowElection(electionId)
-                _followButtonText.value = "Follow Election"
             }
         }
     }
 
-    fun updateFollowButtonText() {
+    @SuppressLint("LogNotTimber")
+    private fun refreshVoterInfo(election: Election) {
         viewModelScope.launch {
-            val currentSavedStatus = isElectionSaved.value ?: false
-            _followButtonText.value = if (currentSavedStatus) {
-                "Unfollow Election"
-            } else {
-                "Follow Election"
+            try {
+                val state = election.division.state
+                val address = "${state},${election.division.country}"
+
+                Log.i("refreshVoterInfo state Value", state)
+                Log.i("refreshVoterInfo address value", address)
+                Log.i("refreshVoterInfo id value", electionId.toString())
+
+
+                voterInfoRepository.refreshVoterInfoResponse(address, electionId)
+                voterInfoRepository.loadVoterInfoById(electionId)
+
+            } catch (err: java.lang.Exception) {
+                Log.e("refreshVoterInfo", err.message.toString())
             }
         }
     }
-
-@SuppressLint("LogNotTimber")
-fun crosscheckIfIdPassedThrough() {
-    Log.i("electionId_of_Element_picked", electionId.toString())
 }
-}
-
-//TODO: Add live data to hold voter info
-
-//TODO: Add var and methods to populate voter info
-
-//TODO: Add var and methods to support loading URLs
-
-//TODO: Add var and methods to save and remove elections to local database
-//TODO: cont'd -- Populate initial state of save button to reflect proper action based on election saved status
-
-/**
- * Hint: The saved state can be accomplished in multiple ways. It is directly related to how elections are saved/removed from the database.
- */
 

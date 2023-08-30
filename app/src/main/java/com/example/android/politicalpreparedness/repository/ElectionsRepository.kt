@@ -15,51 +15,26 @@ class ElectionsRepository(private val electionDatabase: ElectionDatabase) {
 
     @SuppressLint("LogNotTimber")
     suspend fun refreshElections() {
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             try {
                 val electionResponse = CivicsApi.retrofitService.getElections()
                 electionDatabase.electionDao.insertAllElections(*electionResponse.elections.asDatabaseModel())
                 Log.i("refreshElections", "Success")
-            }
-            catch(err: java.lang.Exception){
+            } catch (err: java.lang.Exception) {
                 Log.e("refreshElections", err.message.toString())
             }
         }
     }
+
+    @SuppressLint("LogNotTimber")
     suspend fun refreshSavedElections() {
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             try {
                 electionDatabase.electionDao.getSavedElections()
                 Log.i("refreshSavedElections", "Success")
-            }
-            catch(err: java.lang.Exception){
+            } catch (err: java.lang.Exception) {
                 Log.e("refreshElections", err.message.toString())
             }
         }
     }
-
-
-//    suspend fun followElection(election: Election?) {
-//        withContext(Dispatchers.IO) {
-//            election?.let {
-//                electionDatabase.electionDao.followElectionById(it.id)
-//            }
-//        }
-//    }
-//
-//    suspend fun unfollowElection(election: Election?) {
-//        withContext(Dispatchers.IO) {
-//            election?.let {
-//                electionDatabase.electionDao.unfollowElectionById(it.id)
-//            }
-//        }
-//    }
-
-
-
-    suspend fun getClickedElection(){
-
-    }
-
-
 }

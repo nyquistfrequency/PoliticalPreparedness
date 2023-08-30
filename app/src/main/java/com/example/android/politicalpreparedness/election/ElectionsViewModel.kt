@@ -18,10 +18,6 @@ class ElectionsViewModel(
     val listOfUpcomingElections = electionsRepository.upcomingElections
     val listOfSavedElections = electionsRepository.savedElections
 
-    private val _navigateToVoterInfoFragment = MutableLiveData<Election?>()
-    val navigateToVoterInfoFragment: LiveData<Election?>
-        get() = _navigateToVoterInfoFragment
-
     init {
         viewModelScope.launch {
             electionsRepository.refreshElections()
@@ -29,13 +25,10 @@ class ElectionsViewModel(
         }
     }
 
-    //TODO: Create live data val for upcoming elections
+    private val _navigateToVoterInfoFragment = MutableLiveData<Election?>()
+    val navigateToVoterInfoFragment: LiveData<Election?>
+        get() = _navigateToVoterInfoFragment
 
-    //TODO: Create live data val for saved elections
-
-    //TODO: Create val and functions to populate live data for upcoming elections from the API and saved elections from local database
-
-    //TODO: Create functions to navigate to saved or upcoming election voter info
     fun onUpcomingElectionClicked(election: Election) {
         _navigateToVoterInfoFragment.value = election
     }

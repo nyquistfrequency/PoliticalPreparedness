@@ -6,7 +6,6 @@ import com.example.android.politicalpreparedness.network.models.VoterInfo
 
 @Dao
 interface VoterInfoDao {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertVoterInfo(voterInfo: VoterInfo)
 

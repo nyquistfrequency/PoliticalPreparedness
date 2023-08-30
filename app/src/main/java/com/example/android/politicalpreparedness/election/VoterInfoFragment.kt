@@ -1,9 +1,10 @@
 package com.example.android.politicalpreparedness.election
 
-import android.content.ActivityNotFoundException
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +13,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.navArgs
 import com.example.android.politicalpreparedness.R
 import com.example.android.politicalpreparedness.databinding.FragmentVoterInfoBinding
-import com.google.android.material.snackbar.Snackbar
 
 class VoterInfoFragment : Fragment() {
 
@@ -20,94 +20,68 @@ class VoterInfoFragment : Fragment() {
 
     private val voterInfoViewModel: VoterInfoViewModel by lazy {
         val activity = requireNotNull(this.activity)
-        val viewModelFactory = VoterInfoViewModelFactory(activity.application, args.argElectionId)
+        val viewModelFactory = VoterInfoViewModelFactory(activity.application, args.election)
         ViewModelProvider(this, viewModelFactory)[VoterInfoViewModel::class.java]
     }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?)
-    : View? {
+        savedInstanceState: Bundle?
+    )
+            : View? {
 
         val binding = FragmentVoterInfoBinding.inflate(inflater)
 
         binding.lifecycleOwner = this
         binding.voterInfoViewModel = voterInfoViewModel
 
-        // Just for testing
-        voterInfoViewModel.crosscheckIfIdPassedThrough()
+        // Observe the "isElectionSaved" state and manipulate the button text based on that
+        voterInfoViewModel.isElectionSaved.observe(viewLifecycleOwner) { isSaved ->
+            binding.followUnfollowButton.text = if (isSaved) {
+                getString(R.string.unfollow_election)
+            } else {
+                getString(R.string.follow_election)
+            }
+        }
 
+        // On Button press: Toggle the isSaved value of the election
         binding.followUnfollowButton.setOnClickListener {
-            // Toggle the isSaved value of the election
             voterInfoViewModel.toggleElectionSavedStatus()
         }
 
-        voterInfoViewModel.followButtonText.observe(viewLifecycleOwner) { buttonText ->
-            binding.followUnfollowButton.text = buttonText
+        // On Button press: Start LoadURLIntentActivity for votingLocation
+        binding.stateLocations.setOnClickListener {
+            val urlString = voterInfoViewModel.voterInfo.value?.votingLocation
+            urlString?.run {
+                activityLoadUrlIntent(this)
+            }
         }
 
-
-//        binding.stateLocations.setOnClickListener {
-//            val urlStr = voterInfoViewModel.voterInfo.value?.votingLocationUrl
-//            urlStr?.run {
-//                startActivityUrlIntent(this)
-//            }
-//        }
-//
-//        binding.stateBallot.setOnClickListener {
-//            val urlStr = viewModel.voterInfo.value?.ballotInformationUrl
-//            urlStr?.run {
-//                startActivityUrlIntent(this)
-//            }
-//        }
-
-        // TODO: Add ViewModel values and create ViewModel
-
-        // TODO: Add binding values
-
-        // TODO: Populate voter info -- hide views without provided data.
+        // On Button press: Start LoadURLIntentActivity for ballotinformation
+        binding.stateBallot.setOnClickListener {
+            val urlString = voterInfoViewModel.voterInfo.value?.ballotInformation
+            urlString?.run {
+                activityLoadUrlIntent(this)
+            }
+        }
 
         /**
         Hint: You will need to ensure proper data is provided from previous fragment.
-        */
+         */
 
-        // TODO: Handle loading of URLs
 
-        // TODO: Handle save button UI state
-        // TODO: cont'd Handle save button clicks
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-//        voterInfoViewModel..observe(viewLifecycleOwner) { elections ->
-//            upcomingElectionsAdapter.submitList(elections)
-//        }
-    }
-
-    // TODO: Create method to load URL intents
-    private fun startActivityUrlIntent(urlStr: String) {
-        val uri: Uri = Uri.parse(urlStr)
-        val intent = Intent(Intent.ACTION_VIEW, uri)
+    @SuppressLint("LogNotTimber")
+    private fun activityLoadUrlIntent(url: String) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
 
         try {
-            intent.setPackage("com.android.chrome")
             startActivity(intent)
-
-        } catch (e: ActivityNotFoundException) {
-
-            try {
-                intent.setPackage(null)
-                startActivity(intent)
-
-            } catch (e: ActivityNotFoundException) {
-                Snackbar.make(
-                    requireView(),
-                    getString(R.string.no_web_browser_found),
-                    Snackbar.LENGTH_LONG).show()
-            }
+        } catch (err: java.lang.Exception){
+            Log.e("voterInfoResponse", err.message.toString())
         }
     }
 }

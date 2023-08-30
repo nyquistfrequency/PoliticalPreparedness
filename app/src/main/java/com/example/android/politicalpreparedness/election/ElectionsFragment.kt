@@ -45,14 +45,14 @@ class ElectionsFragment : Fragment() {
         binding.savedElectionsRecycler.adapter = savedElectionsAdapter
 
 
-        //TODO: Currently argdivision is commented out in the navgraph - Tbd how it shall be applied later
+        //Currently argdivision is commented out in the navgraph - Won't be used?
         electionsViewModel.navigateToVoterInfoFragment.observe(
             viewLifecycleOwner,
             Observer { election ->
                 election?.let {
                     this.findNavController().navigate(
                         ElectionsFragmentDirections.actionElectionsFragmentToVoterInfoFragment(
-                            it.id
+                            it
                         )
                     )
                     electionsViewModel.doneNavigating()
@@ -74,5 +74,3 @@ class ElectionsFragment : Fragment() {
     }
 
 }
-
-// TODO: Refresh adapters when fragment loads
