@@ -125,6 +125,7 @@ class RepresentativeFragment : Fragment() {
     //(as from https://knowledge.udacity.com/questions/809749)
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
+        Log.i(TAG, "onSaveInstanceState called")
         //Persisting values for address
         outState.putParcelable("address",binding.representativeViewModel?.address?.value)
 
