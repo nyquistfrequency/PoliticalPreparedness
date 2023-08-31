@@ -23,22 +23,27 @@ class RepresentativeViewModel: ViewModel() {
     private val line1 = MutableLiveData<String>()
     private val line2 = MutableLiveData<String>()
     private val city = MutableLiveData<String>()
-    val state = MutableLiveData<String>() // not private since it's passed through for mapAddressThroughState
+    val state =
+        MutableLiveData<String>() // not private since it's passed through for mapAddressThroughState
     private val zip = MutableLiveData<String>()
 
     // No repository because no Database is being utilized
-    fun getRepresentatives(address: String){
+    fun getRepresentatives(address: String) {
         viewModelScope.launch {
-            val (offices,officials) = CivicsApi.retrofitService.getRepresentatives(address)
-            _representatives.value = offices.flatMap {
-                    office -> office.getRepresentatives(officials)
+            val (offices, officials) = CivicsApi.retrofitService.getRepresentatives(address)
+            _representatives.value = offices.flatMap { office ->
+                office.getRepresentatives(officials)
             }
         }
     }
 
 
-    fun getAddressFromLocation(location: Address?){
+    fun getAddressFromLocation(location: Address?) {
         _address.value = location!!
+    }
+
+    fun getAddressState(address: Address?): String {
+        return address?.state ?: ""
     }
 
     // Enables to push "Find my representatives" with a state only if the user has not provided a full address

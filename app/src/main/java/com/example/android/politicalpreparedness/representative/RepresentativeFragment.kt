@@ -31,6 +31,7 @@ class RepresentativeFragment : Fragment() {
     companion object {
         private val TAG = RepresentativeFragment::class.java.simpleName
         private const val REQUEST_LOCATION_PERMISSION = 1
+        private var currentState: String = ""
     }
 
     private val representativeViewModel: RepresentativeViewModel by lazy {
@@ -87,6 +88,8 @@ class RepresentativeFragment : Fragment() {
             if (checkLocationPermissions()) {
                 Log.i(TAG, "checkLocationPermissions passed")
                 getLocation()
+                // set current State to Spinner
+                binding.state.setSelection(spinnerAdapter.getPosition(currentState))
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -172,7 +175,8 @@ class RepresentativeFragment : Fragment() {
                 location?.let {
                     try {
                         representativeViewModel.getAddressFromLocation(geoCodeLocation(it))
-
+                        // Update currentState after getting location
+                        currentState = representativeViewModel.getAddressState(geoCodeLocation(it))
                     } catch (err: IOException) {
                         Toast.makeText(
                             requireContext(),
