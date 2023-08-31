@@ -50,6 +50,8 @@ class RepresentativeFragment : Fragment() {
     ): View? {
         binding = FragmentRepresentativeBinding.inflate(inflater)
 
+        //After Submission Feedback: Implemented proper databinding in my fragment_representative.xml
+        //Mapping used to be wrong, e.g. "@{representativeViewModel.address.line1}" instead of "@={representativeViewModel.line1}"
         binding.executePendingBindings()
 
         binding.lifecycleOwner = this
@@ -94,8 +96,7 @@ class RepresentativeFragment : Fragment() {
                 Log.i(TAG, "checkLocationPermissions passed")
                 getLocation()
                 // set current State to Spinner
-                binding.state.setSelection(spinnerAdapter.getPosition(currentState))
-                // Set the values of the address fields based on received location
+                // binding.state.setSelection(spinnerAdapter.getPosition(currentState))
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -204,8 +205,8 @@ class RepresentativeFragment : Fragment() {
                 location?.let {
                     try {
                         representativeViewModel.getAddressFromLocation(geoCodeLocation(it))
-                        // Update currentState after getting location
-                        currentState = representativeViewModel.getAddressState(geoCodeLocation(it))
+                        // No longer necessary because of the Mutable LiveData ImplementationUpdate currentState after getting location
+                        // currentState = representativeViewModel.getAddressState(geoCodeLocation(it))
                     } catch (err: IOException) {
                         Toast.makeText(
                             requireContext(),

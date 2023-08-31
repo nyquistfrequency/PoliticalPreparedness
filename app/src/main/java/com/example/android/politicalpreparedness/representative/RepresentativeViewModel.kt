@@ -1,5 +1,8 @@
 package com.example.android.politicalpreparedness.representative
 
+import android.util.Log
+import android.widget.Toast
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,6 +11,7 @@ import com.example.android.politicalpreparedness.network.CivicsApi
 import com.example.android.politicalpreparedness.network.models.Address
 import com.example.android.politicalpreparedness.representative.model.Representative
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 
 class RepresentativeViewModel : ViewModel() {
 
@@ -29,21 +33,34 @@ class RepresentativeViewModel : ViewModel() {
     // No repository because no Database is being utilized
     fun getRepresentatives(address: String) {
         viewModelScope.launch {
-            val (offices, officials) = CivicsApi.retrofitService.getRepresentatives(address)
-            _representatives.value = offices.flatMap { office ->
-                office.getRepresentatives(officials)
+            try {
+                val (offices, officials) = CivicsApi.retrofitService.getRepresentatives(address)
+                _representatives.value = offices.flatMap { office ->
+                    office.getRepresentatives(officials)
+                }
+            }
+            catch (err: HttpException){
+                Log.e("getRepresentatives", "The Representatitves for this state were not found")
             }
         }
     }
 
 
         fun getAddressFromLocation(location: Address?) {
-        _address.value = location!!
+            _address.value = location!!
+
+            // Added after Feedback from Mentor https://knowledge.udacity.com/questions/1006088
+            line1.value = location.line1
+            line2.value = location.line2!!
+            city.value = location.city
+            state.value = location.state
+            zip.value = location.zip
     }
 
-    fun getAddressState(address: Address?): String {
-        return address?.state ?: ""
-    }
+//    // No longer necessary because of the Mutable LiveData ImplementationUpdate currentState after getting location
+//    fun getAddressState(address: Address?): String {
+//        return address?.state ?: ""
+//    }
 
     // Enables to push "Find my representatives" with a state only if the user has not provided a full address
     fun mapAddressThroughState(state: String) {
