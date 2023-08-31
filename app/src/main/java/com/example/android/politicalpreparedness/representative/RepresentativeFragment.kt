@@ -1,12 +1,16 @@
 package com.example.android.politicalpreparedness.representative
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
+import android.location.Geocoder
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -14,6 +18,13 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.android.politicalpreparedness.R
 import com.example.android.politicalpreparedness.databinding.FragmentRepresentativeBinding
 import com.example.android.politicalpreparedness.representative.adapter.RepresentativeListAdapter
+import com.example.android.politicalpreparedness.network.models.Address
+import com.google.android.gms.location.*
+import java.util.*
+import androidx.lifecycle.Observer
+import com.google.android.gms.location.LocationServices
+import java.io.IOException
+import java.util.Locale
 
 class RepresentativeFragment : Fragment() {
 
@@ -22,18 +33,12 @@ class RepresentativeFragment : Fragment() {
         private const val REQUEST_LOCATION_PERMISSION = 1
     }
 
-    private val representativeviewModel: RepresentativeViewModel by lazy {
-        val activity = requireNotNull(this.activity)
-        val viewModelFactory = RepresentativeViewModelFactory(activity.application)
+    private val representativeViewModel: RepresentativeViewModel by lazy {
+        val viewModelFactory = RepresentativeViewModelFactory()
         ViewModelProvider(this, viewModelFactory)[RepresentativeViewModel::class.java]
     }
 
-    //ToDo: Rework adapter - it's not just a click on the representatives but a click on of the elements (website, facebook, twitter)
-    private val representativeListAdapter =
-        RepresentativeListAdapter(RepresentativeListAdapter.RepresentativeClickListener { representative ->
-            representativeviewModel.onRepresentativeClicked(representative)
-        })
-
+    @SuppressLint("LogNotTimber")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -41,21 +46,58 @@ class RepresentativeFragment : Fragment() {
     ): View? {
         val binding = FragmentRepresentativeBinding.inflate(inflater)
 
+        binding.executePendingBindings()
         binding.lifecycleOwner = this
-        binding.representativeViewModel = representativeviewModel
+        binding.representativeViewModel = representativeViewModel
 
-        //TODO: Define and assign Representative adapter
+        // Spinner created from the input in https://knowledge.udacity.com/questions/945408
+        val representativeListAdapter = RepresentativeListAdapter()
+        val spinnerAdapter = ArrayAdapter(requireContext(),R.layout.support_simple_spinner_dropdown_item,resources.getStringArray(R.array.states))
         binding.representativeRecycler.adapter = representativeListAdapter
+        binding.state.adapter = spinnerAdapter
 
-        //TODO: Populate Representative adapter
+        // Populating the adapters through LiveData
+        representativeViewModel.representatives.observe(viewLifecycleOwner, Observer {
+            it?.let{
+                representativeListAdapter.submitList(it)
+            }
+        })
 
-        //TODO: Establish button listeners for field and location search
-        //TODO: On Button Press:
-        //            if (checkLocationPermission()) {
-        //            getlocation
-        //        } else {
-        //            requestQPermission()
-        //        }
+        representativeViewModel.address.observe(viewLifecycleOwner, Observer {
+            it?.let{
+                representativeViewModel.getRepresentatives(it.toFormattedString())
+            }
+        })
+
+
+
+        binding.buttonSearch.setOnClickListener {
+            Log.i(TAG, "Find my representatives Button was pressed")
+            hideKeyboard()
+            binding.addressLine1.text.toString()
+            binding.addressLine2.text.toString()
+            binding.city.text.toString()
+            binding.state.selectedItem.toString()
+            binding.zip.toString()
+
+            representativeViewModel.mapAddressThroughState(binding.state.selectedItem as String)
+        }
+
+
+        binding.buttonLocation.setOnClickListener {
+            Log.i(TAG, "Use my Location Button was pressed")
+            if (checkLocationPermissions()) {
+                Log.i(TAG, "checkLocationPermissions passed")
+                getLocation()
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    R.string.permission_denied_explanation,
+                    Toast.LENGTH_SHORT).show()
+            }
+
+        }
+
         return binding.root
     }
 
@@ -65,13 +107,13 @@ class RepresentativeFragment : Fragment() {
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        //TODO: Handle location permission result to get location on permission granted
         if (requestCode == REQUEST_LOCATION_PERMISSION) {
             if (grantResults.isNotEmpty() &&
                 grantResults[0] == PackageManager.PERMISSION_GRANTED
             ) {
-                //TODO: Determine what should be executed here
-                Log.i(TAG, "Test")
+                Log.i(TAG, "getLocation is executed now")
+                getLocation()
+
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -94,8 +136,7 @@ class RepresentativeFragment : Fragment() {
             )
             == PackageManager.PERMISSION_GRANTED
         ) {
-            //ToDo: enable my location without utilizing the map
-            getLocation()
+            Log.i(TAG, "requestQPermission passed")
         } else {
             requestPermissions(
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
@@ -104,11 +145,10 @@ class RepresentativeFragment : Fragment() {
         }
     }
 
-    private fun checkLocationPermissions(): Boolean {
+        private fun checkLocationPermissions(): Boolean {
         return if (isPermissionGranted()) {
             true
         } else {
-            //TODO: REVIEW IF THIS WORKS AS INTENDED
             requestQPermission()
             false
         }
@@ -116,7 +156,7 @@ class RepresentativeFragment : Fragment() {
 
 
     private fun isPermissionGranted(): Boolean {
-        //TODO: Check if permission is already granted and return (true = granted, false = denied/other)
+        //Check if permission is already granted and return (true = granted, false = denied/other)
         return (
                 ContextCompat.checkSelfPermission(
                     requireContext(),
@@ -125,20 +165,36 @@ class RepresentativeFragment : Fragment() {
                 )
     }
 
+    @SuppressLint("MissingPermission")
     private fun getLocation() {
-        //TODO: Get location from LocationServices
-        //TODO: The geoCodeLocation method is a helper function to change the lat/long location to a human readable street address
-    }
+        Log.i(TAG, "getLocation is called")
+        LocationServices.getFusedLocationProviderClient(requireContext())
+            .lastLocation
+            .addOnSuccessListener { location ->
+                location?.let {
+                    try {
+                        representativeViewModel.getAddressFromLocation(geoCodeLocation(it))
 
-    //TODO: Rework because it currently won't compile
-//    private fun geoCodeLocation(location: Location): Address {
-//        val geocoder = Geocoder(context, Locale.getDefault())
-//        return geocoder.getFromLocation(location.latitude, location.longitude, 1)
-//                .map { address ->
-//                    Address(address.thoroughfare, address.subThoroughfare, address.locality, address.adminArea, address.postalCode)
-//                }
-//                .first()
-//    }
+                    } catch (err: IOException) {
+                        Toast.makeText(
+                            requireContext(),
+                            R.string.error_getting_address,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+            }
+        }
+
+
+    private fun geoCodeLocation(location: Location): Address? {
+        val geocoder = Geocoder(requireContext(), Locale.getDefault())
+        return geocoder.getFromLocation(location.latitude, location.longitude, 1)
+            ?.map { address ->
+                Address(address.thoroughfare, address.subThoroughfare, address.locality, address.adminArea, address.postalCode)
+            }
+            ?.first()
+    }
 
     private fun hideKeyboard() {
         val imm = activity?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager

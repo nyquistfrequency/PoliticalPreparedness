@@ -3,6 +3,7 @@
     <string name="app_name">Political Preparedness</string>
     <string name="upcoming_elections">Upcoming Elections</string>
     <string name="election_information">Election Information</string>
+
     <string name="saved_elections">Saved Elections</string>
     <string name="unfollow_election">Unfollow Election</string>
     <string name="follow_election">Follow Election</string>
@@ -10,11 +11,16 @@
     <string name="ballot_information">Ballot Information</string>
 
     <string name="find_my_representatives">Find my representatives</string>
-
+    <string name="representative_search">Representative Search</string>
+    <string name="my_representatives">My Representatives</string>
+    <string name="use_my_location">Use my location</string>
+    <string name="address_line_1">Address Line 1</string>
+    <string name="address_line_2">Address Line 2</string>
+    <string name="city">City</string>
+    <string name="zip">Zip</string>
 
     <string name="permission_denied_explanation">You need to grant location permission for this functionality to work.</string>
-    <string name="no_web_browser_found">To utilize this functionality you need to download a web browser</string>
-
+    <string name="error_getting_address">There was an issue while getting your location. Ply try again.</string>
 
     <!-- TODO: Add necessary string values -->
 

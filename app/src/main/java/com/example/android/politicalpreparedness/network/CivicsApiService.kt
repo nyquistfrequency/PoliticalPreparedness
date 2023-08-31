@@ -35,11 +35,6 @@ private val retrofit = Retrofit.Builder()
  */
 
 interface CivicsApiService {
-    //TODO: Add elections API Call
-
-    //TODO: Add voterinfo API Call
-
-    //TODO: Add representatives API Call
     @GET("elections")
     suspend fun getElections() : ElectionResponse
 
@@ -50,7 +45,7 @@ interface CivicsApiService {
         ) : VoterInfoResponse
 
     @GET("representatives")
-    suspend fun getRepresentativesAddress(
+    suspend fun getRepresentatives(
         @Query("address") address: String
     ) : RepresentativeResponse
 

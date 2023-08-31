@@ -25,26 +25,3 @@ fun List<Election>.asDatabaseModel(): Array<Election> {
     }.toTypedArray()
 }
 
-//fun List<VoterInfoResponse>.asDomainModel(): List<VoterInfoResponse> {
-//    return map {
-//        VoterInfoResponse(
-//            election = it.election,
-//            pollingLocations = it.pollingLocations,
-//            contests = it.contests,
-//            state = it.state,
-//            electionElectionOfficials = it.electionElectionOfficials
-//        )
-//    }
-//}
-//
-//
-//fun VoterInfoResponse.asDatabaseModel(): VoterInfo {
-//    return VoterInfo(
-//        id = this.election.id,
-//        state = this.state,
-//        votingLocations = this.pollingLocations,
-//        ballotInformation = this.contests
-//    )
-//}
-
-
