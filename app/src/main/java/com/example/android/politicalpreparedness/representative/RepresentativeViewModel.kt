@@ -20,11 +20,11 @@ class RepresentativeViewModel: ViewModel() {
     val address: LiveData<Address>
         get() = _address
 
-    val line1 = MutableLiveData<String>()
-    val line2 = MutableLiveData<String>()
-    val city = MutableLiveData<String>()
-    val state = MutableLiveData<String>()
-    val zip = MutableLiveData<String>()
+    private val line1 = MutableLiveData<String>()
+    private val line2 = MutableLiveData<String>()
+    private val city = MutableLiveData<String>()
+    val state = MutableLiveData<String>() // not private since it's passed through for mapAddressThroughState
+    private val zip = MutableLiveData<String>()
 
     // No repository because no Database is being utilized
     fun getRepresentatives(address: String){
