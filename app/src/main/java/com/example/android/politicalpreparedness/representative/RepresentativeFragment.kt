@@ -107,14 +107,13 @@ class RepresentativeFragment : Fragment() {
         }
 
 
-
         //After Submission Feedback:
-        if (savedInstanceState != null) {
-            binding.addressLine1.setText(savedInstanceState.getString("addressLine1"))
-            binding.addressLine2.setText(savedInstanceState.getString("addressLine2"))
-
+        //Added Parcelable address (as from https://knowledge.udacity.com/questions/616631)
+        savedInstanceState?.getParcelable<Address>("address")?.let{
+            representativeViewModel.getAddressFromLocation(it)
         }
 
+        // Get MotionLayout State (as from https://knowledge.udacity.com/questions/873520)
         savedInstanceState?.getInt("motionLayout")?.let{
             binding.representativeMotionlayout.transitionToState(it)
         }
@@ -123,12 +122,11 @@ class RepresentativeFragment : Fragment() {
     }
 
     //After Submission Feedback: Implementing onSaveInstance to persist MotionLayout & Address
-    //Used the following reference https://knowledge.udacity.com/questions/809749
+    //(as from https://knowledge.udacity.com/questions/809749)
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         //Persisting values for address
-        outState.putString("addressLine1", binding.addressLine1.text.toString())
-        outState.putString("addressLine2", binding.addressLine2.text.toString())
+        outState.putParcelable("address",binding.representativeViewModel?.address?.value)
 
         // Persisting Motionlayout
         outState.putInt("motionLayout",binding.representativeMotionlayout.currentState)
