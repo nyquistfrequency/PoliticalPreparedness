@@ -43,7 +43,7 @@
             android:autofillHints="Address1"
             android:inputType="textPostalAddress"
             android:hint="@string/address_line_1"
-            android:text="@{representativeViewModel.address.line1}"
+            android:text="@={representativeViewModel.line1}"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/search_title"
@@ -56,7 +56,7 @@
             android:autofillHints="Address2"
             android:inputType="textPostalAddress"
             android:hint="@string/address_line_2"
-            android:text="@{representativeViewModel.address.line2}"
+            android:text="@={representativeViewModel.line2}"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/address_line_1"
@@ -71,7 +71,7 @@
             android:autofillHints="City"
             android:inputType="textPostalAddress"
             android:hint="@string/city"
-            android:text="@{representativeViewModel.address.city}"
+            android:text="@={representativeViewModel.city}"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/state"
@@ -92,7 +92,7 @@
             app:layout_constraintStart_toEndOf="@id/city"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/city"
-            app:layout_constraintBottom_toBottomOf="@id/city" />
+            app:layout_constraintBottom_toBottomOf="@id/city"/>
 
         <!-- TODO: Add data binding value -->
         <!-- TODO: Add visual styling and content -->
@@ -104,7 +104,7 @@
             android:hint="@string/zip"
             android:inputType="number"
             android:maxLength="5"
-            android:text="@{representativeViewModel.address.zip}"
+            android:text="@={representativeViewModel.zip}"
             android:textAppearance="@style/TextAppearance.AppCompat.Medium"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="@id/city"

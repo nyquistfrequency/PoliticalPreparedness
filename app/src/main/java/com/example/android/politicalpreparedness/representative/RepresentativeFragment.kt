@@ -51,8 +51,10 @@ class RepresentativeFragment : Fragment() {
         binding = FragmentRepresentativeBinding.inflate(inflater)
 
         binding.executePendingBindings()
+
         binding.lifecycleOwner = this
         binding.representativeViewModel = representativeViewModel
+
 
         // Spinner created from the input in https://knowledge.udacity.com/questions/945408
         val representativeListAdapter = RepresentativeListAdapter()
@@ -83,7 +85,6 @@ class RepresentativeFragment : Fragment() {
             binding.zip.toString()
 
             representativeViewModel.mapAddressThroughState(binding.state.selectedItem as String)
-            binding.executePendingBindings()
         }
 
 
@@ -94,7 +95,7 @@ class RepresentativeFragment : Fragment() {
                 getLocation()
                 // set current State to Spinner
                 binding.state.setSelection(spinnerAdapter.getPosition(currentState))
-                binding.executePendingBindings()
+                // Set the values of the address fields based on received location
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -103,7 +104,6 @@ class RepresentativeFragment : Fragment() {
             }
 
         }
-
 
         //After Submission Feedback:
         //Added Parcelable address (as from https://knowledge.udacity.com/questions/616631)

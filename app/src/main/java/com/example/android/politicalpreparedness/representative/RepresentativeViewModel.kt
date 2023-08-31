@@ -9,7 +9,7 @@ import com.example.android.politicalpreparedness.network.models.Address
 import com.example.android.politicalpreparedness.representative.model.Representative
 import kotlinx.coroutines.launch
 
-class RepresentativeViewModel: ViewModel() {
+class RepresentativeViewModel : ViewModel() {
 
     //Establish live data for representatives and address
     private val _representatives = MutableLiveData<List<Representative>>()
@@ -20,12 +20,11 @@ class RepresentativeViewModel: ViewModel() {
     val address: LiveData<Address>
         get() = _address
 
-    private val line1 = MutableLiveData<String>()
-    private val line2 = MutableLiveData<String>()
-    private val city = MutableLiveData<String>()
-    val state =
-        MutableLiveData<String>() // not private since it's passed through for mapAddressThroughState
-    private val zip = MutableLiveData<String>()
+    val line1 = MutableLiveData<String>()
+    val line2 = MutableLiveData<String>()
+    val city = MutableLiveData<String>()
+    val state = MutableLiveData<String>()
+    val zip = MutableLiveData<String>()
 
     // No repository because no Database is being utilized
     fun getRepresentatives(address: String) {
@@ -38,7 +37,7 @@ class RepresentativeViewModel: ViewModel() {
     }
 
 
-    fun getAddressFromLocation(location: Address?) {
+        fun getAddressFromLocation(location: Address?) {
         _address.value = location!!
     }
 
