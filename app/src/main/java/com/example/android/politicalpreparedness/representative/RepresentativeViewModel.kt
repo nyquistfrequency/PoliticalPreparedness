@@ -41,6 +41,7 @@ class RepresentativeViewModel: ViewModel() {
         _address.value = location!!
     }
 
+    // Enables to push "Find my representatives" with a state only if the user has not provided a full address
     fun mapAddressThroughState(state: String) {
         _address.value = Address(
             line1.value ?: "",

@@ -69,8 +69,6 @@ class RepresentativeFragment : Fragment() {
             }
         })
 
-
-
         binding.buttonSearch.setOnClickListener {
             Log.i(TAG, "Find my representatives Button was pressed")
             hideKeyboard()
