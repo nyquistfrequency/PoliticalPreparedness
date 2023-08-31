@@ -13,8 +13,10 @@
 
     <!-- TODO: Add motion scene to hide form on vertical scroll. -->
     <androidx.constraintlayout.motion.widget.MotionLayout
+        android:id="@+id/representative_motionlayout"
         android:layout_height="match_parent"
         android:layout_width="match_parent"
+        motion:ignore="MotionLayoutInvalidSceneFileReference"
         app:layoutDescription="@xml/fragment_representative_scene">
 
         <TextView

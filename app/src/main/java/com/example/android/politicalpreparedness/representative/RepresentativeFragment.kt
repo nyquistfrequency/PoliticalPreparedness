@@ -34,6 +34,9 @@ class RepresentativeFragment : Fragment() {
         private var currentState: String = ""
     }
 
+    // After Submission Feedback: Rewrote my binding so it's accessible outside of onCreateView so it can be utilized for onSavedInstance
+    private lateinit var binding: FragmentRepresentativeBinding
+
     private val representativeViewModel: RepresentativeViewModel by lazy {
         val viewModelFactory = RepresentativeViewModelFactory()
         ViewModelProvider(this, viewModelFactory)[RepresentativeViewModel::class.java]
@@ -45,7 +48,9 @@ class RepresentativeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val binding = FragmentRepresentativeBinding.inflate(inflater)
+        binding = FragmentRepresentativeBinding.inflate(inflater)
+
+        //After Submission Feedback: removed unnecessary binding.executePendingBindings() at this point
 
         binding.executePendingBindings()
         binding.lifecycleOwner = this
@@ -80,6 +85,7 @@ class RepresentativeFragment : Fragment() {
             binding.zip.toString()
 
             representativeViewModel.mapAddressThroughState(binding.state.selectedItem as String)
+            binding.executePendingBindings()
         }
 
 
@@ -90,6 +96,7 @@ class RepresentativeFragment : Fragment() {
                 getLocation()
                 // set current State to Spinner
                 binding.state.setSelection(spinnerAdapter.getPosition(currentState))
+                binding.executePendingBindings()
             } else {
                 Toast.makeText(
                     requireContext(),
@@ -99,7 +106,32 @@ class RepresentativeFragment : Fragment() {
 
         }
 
+
+
+        //After Submission Feedback:
+        if (savedInstanceState != null) {
+            binding.addressLine1.setText(savedInstanceState.getString("addressLine1"))
+            binding.addressLine2.setText(savedInstanceState.getString("addressLine2"))
+
+        }
+
+        savedInstanceState?.getInt("motionLayout")?.let{
+            binding.representativeMotionlayout.transitionToState(it)
+        }
+
         return binding.root
+    }
+
+    //After Submission Feedback: Implementing onSaveInstance to persist MotionLayout & Address
+    //Used the following reference https://knowledge.udacity.com/questions/809749
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        //Persisting values for address
+        outState.putString("addressLine1", binding.addressLine1.text.toString())
+        outState.putString("addressLine2", binding.addressLine2.text.toString())
+
+        // Persisting Motionlayout
+        outState.putInt("motionLayout",binding.representativeMotionlayout.currentState)
     }
 
     override fun onRequestPermissionsResult(
