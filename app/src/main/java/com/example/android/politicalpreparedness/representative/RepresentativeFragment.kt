@@ -50,8 +50,6 @@ class RepresentativeFragment : Fragment() {
     ): View? {
         binding = FragmentRepresentativeBinding.inflate(inflater)
 
-        //After Submission Feedback: removed unnecessary binding.executePendingBindings() at this point
-
         binding.executePendingBindings()
         binding.lifecycleOwner = this
         binding.representativeViewModel = representativeViewModel
