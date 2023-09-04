@@ -5,7 +5,7 @@ import java.util.*
 
 object Constants {
     //ToDo: Remove API_KEY before submission (to "DEMO_KEY")
-    const val API_KEY = "AIzaSyCtIG0WG0yw8zWCKHnHbJ7jiok6LKZGjU8"
+    const val API_KEY = "DEMO_KEY"
     const val BASE_URL = "https://www.googleapis.com/civicinfo/v2/"
     const val ELECTION_TABLE_NAME = "election_table"
     const val VOTER_INFO_TABLE_NAME = "voter_info_table"
